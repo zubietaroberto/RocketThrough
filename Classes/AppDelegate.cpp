@@ -1,18 +1,17 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
-static cocos2d::Size designResolutionSize = cocos2d::Size(480, 320);
-static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
-static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
-static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
+static Size designResolutionSize = Size(768, 1024);
 
 AppDelegate::AppDelegate() {
 
 }
 
-AppDelegate::~AppDelegate() 
+AppDelegate::~AppDelegate()
 {
 }
 
@@ -27,7 +26,7 @@ void AppDelegate::initGLContextAttrs()
     GLView::setGLContextAttrs(glContextAttrs);
 }
 
-// If you want to use packages manager to install more packages, 
+// If you want to use packages manager to install more packages,
 // don't modify or remove this function
 static int register_all_packages()
 {
@@ -47,30 +46,47 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setOpenGLView(glview);
     }
 
-    // turn on display FPS
-    director->setDisplayStats(true);
-
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);
 
     // Set the design resolution
-    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
+    glview->setDesignResolutionSize(
+      designResolutionSize.width, designResolutionSize.height,
+      ResolutionPolicy::EXACT_FIT
+    );
+
     Size frameSize = glview->getFrameSize();
-    // if the frame's height is larger than the height of medium size.
-    if (frameSize.height > mediumResolutionSize.height)
-    {        
-        director->setContentScaleFactor(MIN(largeResolutionSize.height/designResolutionSize.height, largeResolutionSize.width/designResolutionSize.width));
+    std::vector<std::string> searchPaths;
+    float screenRatio = frameSize.height / frameSize.width;
+
+    if (frameSize.width > 768){
+      searchPaths.push_back("ipadhd");
+      director->setContentScaleFactor(frameSize.height/designResolutionSize.height);
+    } else if (frameSize.width > 320) {
+      if (screenRatio >= 1.5f){
+        searchPaths.push_back("iphonehd");
+      } else {
+        searchPaths.push_back("ipad");
+      }
+      director->setContentScaleFactor(frameSize.height/designResolutionSize.height);
+    } else {
+      searchPaths.push_back("iphone");
+      director->setContentScaleFactor(frameSize.height/designResolutionSize.height);
     }
-    // if the frame's height is larger than the height of small size.
-    else if (frameSize.height > smallResolutionSize.height)
-    {        
-        director->setContentScaleFactor(MIN(mediumResolutionSize.height/designResolutionSize.height, mediumResolutionSize.width/designResolutionSize.width));
-    }
-    // if the frame's height is smaller than the height of medium size.
-    else
-    {        
-        director->setContentScaleFactor(MIN(smallResolutionSize.height/designResolutionSize.height, smallResolutionSize.width/designResolutionSize.width));
-    }
+    FileUtils::getInstance()->setSearchPaths(searchPaths);
+
+    // Preload sounds
+    auto audioEngine = SimpleAudioEngine::getInstance();
+    audioEngine->preloadBackgroundMusic("background.mp3");
+    audioEngine->preloadEffect("pickup.wav");
+    audioEngine->preloadEffect("bombRelease.wav");
+    audioEngine->preloadEffect("rocket.wav");
+    audioEngine->preloadEffect("shipBoom.wav");
+    audioEngine->setBackgroundMusicVolume(0.4f);
+    audioEngine->setEffectsVolume(0.5f);
+
+    // turn on display FPS
+    director->setDisplayStats(false);
 
     register_all_packages();
 
@@ -88,7 +104,7 @@ void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
 
     // if you use SimpleAudioEngine, it must be pause
-    // SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+    SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
 }
 
 // this function will be called when the app is active again
@@ -96,5 +112,5 @@ void AppDelegate::applicationWillEnterForeground() {
     Director::getInstance()->startAnimation();
 
     // if you use SimpleAudioEngine, it must resume here
-    // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+    SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
 }

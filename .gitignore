@@ -26,6 +26,7 @@ Pods/*
 
 #cocos2d-x
 cocos2d/
+/cocos2d
 libs/
 bin/
 obj/

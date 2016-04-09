@@ -269,8 +269,34 @@ void GameLayer::createGameScreen () {
 
 void GameLayer::createParticles() {
 
+	_jet = ParticleSystemQuad::create("jet.plist");
+	_jet->setSourcePosition(Vec2(-_rocket->getRadius()*0.08f, 0));
+	_jet->setAngle(180);
+	_jet->stopSystem();
+	this->addChild(_jet, kBackground);
 
+	_boom = ParticleSystemQuad::create("boom.plist");
+	_boom->stopSystem();
+	this->addChild(_boom, kForeground);
 
+	_comet = ParticleSystemQuad::create("comet.plist");
+	_comet->stopSystem();
+	_comet->setPosition(Vec2(0, _screenSize.height*0.6f));
+	_comet->setVisible(false);
+	this->addChild(_comet, kForeground);
+
+	_pickup = ParticleSystemQuad::create("plink.plist");
+	_pickup->stopSystem();
+	this->addChild(_pickup, kMiddleground);
+
+	_warp = ParticleSystemQuad::create("warp.plist");
+	_warp->setPosition(_rocket->getPosition());
+	this->addChild(_warp, kBackground);
+
+	_star = ParticleSystemQuad::create("star.plist");
+	_star->stopSystem();
+	_star->setVisible(false);
+	this->addChild(_star, kBackground, kSpriteStar);
 }
 
 void GameLayer::createStarGrid() {

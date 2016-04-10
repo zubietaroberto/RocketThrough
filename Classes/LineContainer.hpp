@@ -43,5 +43,7 @@ private:
 	int _dashSpace;
 	Size _screenSize;
 
+	DrawNode *_drawNode;
+
 };
 

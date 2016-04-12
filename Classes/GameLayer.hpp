@@ -57,7 +57,7 @@ class GameLayer : public Layer {
     ParticleSystem * _pickup;
     ParticleSystem * _warp;
 
-    Array * _planets;
+    std::vector<GameSprite*> planets;
     Size _screenSize;
 
     GameState _state;

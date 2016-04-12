@@ -17,9 +17,6 @@ using namespace CocosDenshion;
 
 
 GameLayer::~GameLayer () {
-
-    CC_SAFE_RELEASE(_planets);
-
 }
 
 Scene* GameLayer::scene()
@@ -48,7 +45,7 @@ bool GameLayer::init()
     }
 
   	//init game values
-  	_screenSize = Director::sharedDirector()->getWinSize();
+  	_screenSize = Director::getInstance()->getWinSize();
     _drawing = false;
     _minLineLength = _screenSize.width * 0.07f;
     _state = kGameIntro;
@@ -59,8 +56,12 @@ bool GameLayer::init()
 
     createStarGrid();
 
-    //listen for touches
-    this->setTouchEnabled(true);
+    // Build Multitouch event Listener
+    auto listener = EventListenerTouchAllAtOnce::create();
+    listener->onTouchesBegan = CC_CALLBACK_2(GameLayer::onTouchesBegan, this);
+    listener->onTouchesMoved = CC_CALLBACK_2(GameLayer::onTouchesMoved, this);
+    listener->onTouchesEnded = CC_CALLBACK_2(GameLayer::onTouchesEnded, this);
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
     //create main loop
     this->schedule(schedule_selector(GameLayer::update));
@@ -134,7 +135,7 @@ void GameLayer::onTouchesEnded(const std::vector<Touch*>& touches, Event *event)
 
     } else if (_state == kGamePaused) {
 
-        _pauseBtn->setSpriteFrame(SpriteFrameCache::getInstance()->spriteFrameByName("btn_pause_off.png"));
+        _pauseBtn->setSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("btn_pause_off.png"));
         _paused->setVisible(false);
         _state = kGamePlay;
         _running = true;
@@ -148,8 +149,8 @@ void GameLayer::onTouchesEnded(const std::vector<Touch*>& touches, Event *event)
     if (_pauseBtn->getBoundingBox().containsPoint(tap)){
       _paused->setVisible(true);
       _state = kGamePaused;
-      _pauseBtn->setDisplayFrame(
-        SpriteFrameCache::getInstance()->spriteFrameByName("btn_pause_on.png")
+      _pauseBtn->setSpriteFrame(
+        SpriteFrameCache::getInstance()->getSpriteFrameByName("btn_pause_on.png")
       );
       _running = false;
       return;
@@ -243,7 +244,7 @@ void GameLayer::createGameScreen () {
     this->addChild(_lineContainer);
 
 
-    SpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("sprite_sheet.plist");
+    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("sprite_sheet.plist");
     _gameBatchNode = SpriteBatchNode::create("sprite_sheet.png", 100);
 
     this->addChild(_gameBatchNode, kForeground);
@@ -255,50 +256,47 @@ void GameLayer::createGameScreen () {
 
     //add planets
     GameSprite * planet;
-    _planets = Array::create();
-    _planets->retain();
-
     planet = GameSprite::createWithFrameName("planet_1.png");
     planet->setPosition(Vec2(_screenSize.width * 0.25f,
                             _screenSize.height * 0.8f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
-    _planets->addObject(planet);
+    planets.push_back(planet);
 
     planet = GameSprite::createWithFrameName("planet_2.png");
     planet->setPosition(Vec2(_screenSize.width * 0.8f,
                             _screenSize.height * 0.45f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
-    _planets->addObject(planet);
+    planets.push_back(planet);
 
     planet = GameSprite::createWithFrameName("planet_3.png");
     planet->setPosition(Vec2(_screenSize.width * 0.75f,
                             _screenSize.height * 0.8f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
-    _planets->addObject(planet);
+    planets.push_back(planet);
 
     planet = GameSprite::createWithFrameName("planet_4.png");
     planet->setPosition(Vec2(_screenSize.width * 0.5f,
                             _screenSize.height * 0.5f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
-    _planets->addObject(planet);
+    planets.push_back(planet);
 
     planet = GameSprite::createWithFrameName("planet_5.png");
     planet->setPosition(Vec2(_screenSize.width * 0.18f,
                             _screenSize.height * 0.45f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
-    _planets->addObject(planet);
+    planets.push_back(planet);
 
     planet = GameSprite::createWithFrameName("planet_6.png");
     planet->setPosition(Vec2(_screenSize.width * 0.8f,
                             _screenSize.height * 0.15f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
-    _planets->addObject(planet);
+    planets.push_back(planet);
 
     planet = GameSprite::createWithFrameName("planet_7.png");
     planet->setPosition(Vec2(_screenSize.width * 0.18f,
                             _screenSize.height * 0.1f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
-    _planets->addObject(planet);
+    planets.push_back(planet);
 
     Sprite * scoreLabel = Sprite::createWithSpriteFrameName("label_score.png");
     scoreLabel->setPosition(Vec2(_screenSize.width * 0.4f, _screenSize.height * 0.95));
@@ -317,7 +315,7 @@ void GameLayer::createGameScreen () {
 
     _intro = Sprite::createWithSpriteFrameName("logo.png");
     _intro->setPosition(Vec2(_screenSize.width * 0.5f, _screenSize.height * 0.55f));
-    CCSprite *play = CCSprite::createWithSpriteFrameName("label_play.png");
+    Sprite *play = Sprite::createWithSpriteFrameName("label_play.png");
     play->setPosition(
       Vec2(
         _intro->getBoundingBox().size.width * 0.5f,
@@ -377,16 +375,16 @@ void GameLayer::createStarGrid() {
     int rows = (_screenSize.height - 4 * gridFrame)/tile;
     int cols = (_screenSize.width  - 2 * gridFrame)/tile;
 
-    int count = _planets->count();
+    int count = planets.size();
     GameSprite * planet;
-    CCPoint cell;
+    Point cell;
     bool overlaps;
     for (int r = 0; r < rows; r++) {
         for (int c = 0; c < cols; c++) {
             cell = Vec2(gridFrame + c * tile, 2 * gridFrame + r * tile);
             overlaps = false;
             for (int j = 0; j < count; j++) {
-                planet = (GameSprite *) _planets->objectAtIndex(j);
+                planet = planets.at(j);
                 if (pow(planet->getPositionX() - cell.x, 2) + pow(planet->getPositionY() - cell.y, 2) <= pow(planet->getRadius() * 1.2f, 2)) {
                     overlaps = true;
                 }

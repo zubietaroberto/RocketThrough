@@ -122,7 +122,7 @@ void GameLayer::onTouchesEnded(const std::vector<Touch*>& touches, Event *event)
 
 void GameLayer::resetGame () {
 
-    _rocket->setPosition(ccp(_screenSize.width * 0.5f, _screenSize.height * 0.1f));
+    _rocket->setPosition(Vec2(_screenSize.width * 0.5f, _screenSize.height * 0.1f));
     _rocket->setOpacity(255);
     _rocket->setVisible(true);
     _rocket->reset();
@@ -168,7 +168,7 @@ void GameLayer::killPlayer() {
 void GameLayer::createGameScreen () {
 
     Sprite * bg = Sprite::create("bg.png");
-    bg->setPosition(ccp(_screenSize.width * 0.5f, _screenSize.height * 0.5f));
+    bg->setPosition(Vec2(_screenSize.width * 0.5f, _screenSize.height * 0.5f));
     this->addChild(bg, kBackground);
 
 
@@ -182,7 +182,7 @@ void GameLayer::createGameScreen () {
     this->addChild(_gameBatchNode, kForeground);
 
     _rocket = Rocket::create();
-    _rocket->setPosition(ccp(_screenSize.width * 0.5f, _screenSize.height * 0.1f));
+    _rocket->setPosition(Vec2(_screenSize.width * 0.5f, _screenSize.height * 0.1f));
     _gameBatchNode->addChild(_rocket, kForeground, kSpriteRocket);
 
 
@@ -192,76 +192,80 @@ void GameLayer::createGameScreen () {
     _planets->retain();
 
     planet = GameSprite::createWithFrameName("planet_1.png");
-    planet->setPosition(ccp(_screenSize.width * 0.25f,
+    planet->setPosition(Vec2(_screenSize.width * 0.25f,
                             _screenSize.height * 0.8f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
     _planets->addObject(planet);
 
     planet = GameSprite::createWithFrameName("planet_2.png");
-    planet->setPosition(ccp(_screenSize.width * 0.8f,
+    planet->setPosition(Vec2(_screenSize.width * 0.8f,
                             _screenSize.height * 0.45f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
     _planets->addObject(planet);
 
     planet = GameSprite::createWithFrameName("planet_3.png");
-    planet->setPosition(ccp(_screenSize.width * 0.75f,
+    planet->setPosition(Vec2(_screenSize.width * 0.75f,
                             _screenSize.height * 0.8f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
     _planets->addObject(planet);
 
     planet = GameSprite::createWithFrameName("planet_4.png");
-    planet->setPosition(ccp(_screenSize.width * 0.5f,
+    planet->setPosition(Vec2(_screenSize.width * 0.5f,
                             _screenSize.height * 0.5f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
     _planets->addObject(planet);
 
     planet = GameSprite::createWithFrameName("planet_5.png");
-    planet->setPosition(ccp(_screenSize.width * 0.18f,
+    planet->setPosition(Vec2(_screenSize.width * 0.18f,
                             _screenSize.height * 0.45f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
     _planets->addObject(planet);
 
     planet = GameSprite::createWithFrameName("planet_6.png");
-    planet->setPosition(ccp(_screenSize.width * 0.8f,
+    planet->setPosition(Vec2(_screenSize.width * 0.8f,
                             _screenSize.height * 0.15f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
     _planets->addObject(planet);
 
     planet = GameSprite::createWithFrameName("planet_7.png");
-    planet->setPosition(ccp(_screenSize.width * 0.18f,
+    planet->setPosition(Vec2(_screenSize.width * 0.18f,
                             _screenSize.height * 0.1f));
     _gameBatchNode->addChild(planet, kBackground, kSpritePlanet);
     _planets->addObject(planet);
 
     Sprite * scoreLabel = Sprite::createWithSpriteFrameName("label_score.png");
-    scoreLabel->setPosition(ccp(_screenSize.width * 0.4f, _screenSize.height * 0.95));
+    scoreLabel->setPosition(Vec2(_screenSize.width * 0.4f, _screenSize.height * 0.95));
     _gameBatchNode->addChild(scoreLabel, kBackground);
 
-    _scoreDisplay = LabelBMFont::create("0", "font.fnt", _screenSize.width * 0.5f, kCCTextAlignmentLeft);
-    _scoreDisplay->setAnchorPoint(ccp(0,0.5));
-    _scoreDisplay->setPosition(ccp(_screenSize.width * 0.48f, _screenSize.height * 0.95f));
+    _scoreDisplay = Label::createWithBMFont("font.fnt", "0", TextHAlignment::LEFT,  _screenSize.width * 0.5f);
+    _scoreDisplay->setAnchorPoint(Vec2(0,0.5));
+    _scoreDisplay->setPosition(Vec2(_screenSize.width * 0.48f, _screenSize.height * 0.95f));
     this->addChild(_scoreDisplay, kBackground);
 
     _pauseBtn = GameSprite::createWithFrameName("btn_pause_off.png");
     _pauseBtn->setVisible(false);
-    _pauseBtn->setPosition(ccp(_screenSize.width * 0.06f, _screenSize.height * 0.95f));
+    _pauseBtn->setPosition(Vec2(_screenSize.width * 0.06f, _screenSize.height * 0.95f));
     _gameBatchNode->addChild(_pauseBtn, kBackground);
 
 
     _intro = Sprite::createWithSpriteFrameName("logo.png");
-    _intro->setPosition(ccp(_screenSize.width * 0.5f, _screenSize.height * 0.55f));
+    _intro->setPosition(Vec2(_screenSize.width * 0.5f, _screenSize.height * 0.55f));
     CCSprite *play = CCSprite::createWithSpriteFrameName("label_play.png");
-    play->setPosition(ccp(_intro->boundingBox().size.width * 0.5f, -_intro->boundingBox().size.height * 0.5f));
+    play->setPosition(
+      Vec2(
+        _intro->getBoundingBox().size.width * 0.5f,
+        -_intro->getBoundingBox().size.height * 0.5f)
+      );
     _intro->addChild(play);
     _gameBatchNode->addChild(_intro, kForeground);
 
     _gameOver = Sprite::createWithSpriteFrameName("gameOver.png");
-    _gameOver->setPosition(ccp(_screenSize.width * 0.5f, _screenSize.height * 0.55f));
+    _gameOver->setPosition(Vec2(_screenSize.width * 0.5f, _screenSize.height * 0.55f));
     _gameOver->setVisible(false);
     _gameBatchNode->addChild(_gameOver, kForeground);
 
     _paused = Sprite::createWithSpriteFrameName("label_paused.png");
-    _paused->setPosition(ccp(_screenSize.width * 0.5f, _screenSize.height * 0.55f));
+    _paused->setPosition(Vec2(_screenSize.width * 0.5f, _screenSize.height * 0.55f));
     _paused->setVisible(false);
     _gameBatchNode->addChild(_paused, kForeground);
 }
@@ -312,7 +316,7 @@ void GameLayer::createStarGrid() {
     bool overlaps;
     for (int r = 0; r < rows; r++) {
         for (int c = 0; c < cols; c++) {
-            cell = ccp(gridFrame + c * tile, 2 * gridFrame + r * tile);
+            cell = Vec2(gridFrame + c * tile, 2 * gridFrame + r * tile);
             overlaps = false;
             for (int j = 0; j < count; j++) {
                 planet = (GameSprite *) _planets->objectAtIndex(j);

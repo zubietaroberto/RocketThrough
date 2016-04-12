@@ -43,7 +43,7 @@ class GameLayer : public Layer {
     LineContainer * _lineContainer;
 
     SpriteBatchNode *_gameBatchNode;
-    LabelBMFont * _scoreDisplay;
+    Label* _scoreDisplay;
 
     GameSprite * _pauseBtn;
     Sprite * _intro;

@@ -24,8 +24,8 @@ private:
 
 public:
 
-	CC_SYNTHESIZE(CCPoint, _vector, Vector);
-	CC_SYNTHESIZE(CCPoint, _pivot, Pivot);
+	CC_SYNTHESIZE(Point, _vector, Vector);
+	CC_SYNTHESIZE(Point, _pivot, Pivot);
 	CC_SYNTHESIZE(float, _speed, Speed);
 	CC_SYNTHESIZE(float, _angularSpeed, AngularSpeed);
 	CC_SYNTHESIZE(int, _rotationOrientation, RotationOrientation);
@@ -52,4 +52,3 @@ public:
 	}
 
 };
-

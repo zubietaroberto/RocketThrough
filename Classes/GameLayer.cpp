@@ -77,14 +77,41 @@ void GameLayer::update (float dt) {
 
 void GameLayer::onTouchesBegan(const std::vector<Touch*>& touches, Event *event){
 
+  if (!_running) return;
+  if (touches.empty()) return;
 
+  Point tap = touches.front()->getLocation();
+  float dx = _rocket->getPositionX() - tap.x;
+  float dy = _rocket->getPositionY() - tap.y;
+
+  if(dx*dx + dy*dy <= pow(_rocket->getRadius(), 2)){
+    _lineContainer->setLineType(LINE_NONE);
+    _rocket->setRotationOrientation(ROTATE_NONE);
+    _drawing = true;
+  }
 
 }
 
 void GameLayer::onTouchesMoved(const std::vector<Touch*>& touches, Event *event){
 
+  if (!_running) return;
+  if (touches.empty()) return;
 
+  if (_drawing){
+    Point tap = touches.front()->getLocation();
+    float dx = _rocket->getPositionX() - tap.x;
+    float dy = _rocket->getPositionY() - tap.y;
 
+    if (dx*dx + dy*dy > pow(_minLineLength, 2)){
+      _rocket->select(true);
+      _lineContainer->setPivot(tap);
+      _lineContainer->setLineType(LINE_TEMP);
+    } else {
+      _rocket->select(false);
+      _lineContainer->setLineType(LINE_NONE);
+    }
+
+  }
 }
 
 void GameLayer::onTouchesEnded(const std::vector<Touch*>& touches, Event *event){
@@ -94,7 +121,7 @@ void GameLayer::onTouchesEnded(const std::vector<Touch*>& touches, Event *event)
         _intro->setVisible(false);
         _pauseBtn->setVisible(true);
         _state = kGamePlay;
-        //resetGame();
+        resetGame();
         return;
 
     } else if (_state == kGameOver) {
@@ -102,12 +129,12 @@ void GameLayer::onTouchesEnded(const std::vector<Touch*>& touches, Event *event)
         _gameOver->setVisible(false);
         _pauseBtn->setVisible(true);
         _state = kGamePlay;
-        //resetGame();
+        resetGame();
         return;
 
     } else if (_state == kGamePaused) {
 
-        _pauseBtn->setDisplayFrame(SpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName ("btn_pause_off.png"));
+        _pauseBtn->setSpriteFrame(SpriteFrameCache::getInstance()->spriteFrameByName("btn_pause_off.png"));
         _paused->setVisible(false);
         _state = kGamePlay;
         _running = true;
@@ -115,9 +142,49 @@ void GameLayer::onTouchesEnded(const std::vector<Touch*>& touches, Event *event)
     }
 
     if (!_running) return;
+    if (touches.empty()) return;
 
+    Point tap = touches.front()->getLocation();
+    if (_pauseBtn->getBoundingBox().containsPoint(tap)){
+      _paused->setVisible(true);
+      _state = kGamePaused;
+      _pauseBtn->setDisplayFrame(
+        SpriteFrameCache::getInstance()->spriteFrameByName("btn_pause_on.png")
+      );
+      _running = false;
+      return;
+    }
 
+    _drawing = false;
+    _rocket->select(false);
 
+    if(_lineContainer->getLineType() == LINE_TEMP){
+      _lineContainer->setPivot(tap);
+      _lineContainer->setLineLength(_rocket->getPosition().distance(tap));
+      _rocket->setPivot(tap);
+
+      float circle_length = _lineContainer->getLineLength() * 2 * M_PI;
+      int iterations = floor(circle_length / _rocket->getSpeed() );
+      _rocket->setAngularSpeed(2*M_PI/iterations);
+
+      Vec2 diff = _rocket->getPosition();
+      diff.subtract(_rocket->getPivot());
+      Point clockwise = diff.getRPerp();
+      float dot = clockwise.dot(_rocket->getVector());
+      if (dot > 0){
+        _rocket->setAngularSpeed(_rocket->getAngularSpeed()* -1);
+        _rocket->setRotationOrientation(ROTATE_CLOCKWISE);
+        _rocket->setTargetRotation(CC_RADIANS_TO_DEGREES(
+          atan2(clockwise.y, clockwise.x))
+        );
+      } else {
+        _rocket->setRotationOrientation(ROTATE_COUNTER);
+        _rocket->setTargetRotation(CC_RADIANS_TO_DEGREES(
+          atan2(-1*clockwise.y, -1*clockwise.x))
+        );
+        _lineContainer->setLineType(LINE_DASHED);
+      }
+    }
 }
 
 void GameLayer::resetGame () {

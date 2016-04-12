@@ -73,6 +73,111 @@ bool GameLayer::init()
 
 void GameLayer::update (float dt) {
 
+  if (!_running || _state != kGamePlay) return;
+
+  if (_lineContainer->getLineType() != LINE_NONE){
+    _lineContainer->setTip(_rocket->getPosition());
+  }
+
+  if (_rocket->collidedWithSides()){
+    _lineContainer->setLineType(LINE_NONE);
+  }
+
+  _rocket->update(dt);
+
+  //Update jet particle so that it follows the rocket
+  if (!_jet->isActive()) _jet->resetSystem();
+  _jet->setRotation(_rocket->getRotation());
+  _jet->setPosition(_rocket->getPosition());
+
+  _cometTimer += dt;
+  float newY;
+  if (_cometTimer > _cometInterval){
+    _cometTimer = 0;
+    if (!_comet->isVisible()){
+      _comet->setPositionX(0);
+      newY = (float) rand()/
+        ((float) RAND_MAX/_screenSize.height*0.6f) + _screenSize.height * 0.2f;
+
+      _comet->setPositionY(MIN(newY, _screenSize.height * 0.9f));
+      _comet->setVisible(true);
+      _comet->resetSystem();
+    }
+  }
+
+  if (_comet->isVisible()){
+
+    //Collision with comet
+    if (
+      pow(_comet->getPositionX() - _rocket->getPositionX(), 2) +
+      pow(_comet->getPositionY() - _rocket->getPositionY(), 2) <=
+      pow(_rocket->getRadius(), 2)
+    ){
+
+      if (_rocket->isVisible()) killPlayer();
+    }
+
+    _comet->setPositionX(_comet->getPositionX() + 50 * dt);
+    if (_comet->getPositionX() > _screenSize.width * 1.5f){
+      _comet->stopSystem();
+      _comet->setVisible(false);
+    }
+  }
+
+  _lineContainer->update(dt);
+  _rocket->setOpacity(_lineContainer->getEnergy() * 255);
+
+  // Collision with the planets
+  for (auto planet: planets){
+    if(
+      pow(planet->getPositionX() - _rocket->getPositionX(), 2) +
+      pow(planet->getPositionY() - _rocket->getPositionY(), 2) <=
+      pow(_rocket->getRadius() * 0.8f + planet->getRadius()+0.65f, 2)
+    ){
+      if (_rocket->isVisible()) killPlayer();
+      break;
+    }
+  }
+
+  // Collision with the star
+  if (
+    pow(_star->getPositionX() - _rocket->getPositionX(), 2) +
+    pow(_star->getPositionY() - _rocket->getPositionY(), 2) <=
+    pow(_rocket->getRadius()*1.2f, 2)
+  ){
+    _pickup->setPosition(_star->getPosition());
+    _pickup->resetSystem();
+
+    if (_lineContainer->getEnergy() + 0.25f < 1){
+      _lineContainer->setEnergy(_lineContainer->getEnergy() +0.25f );
+    } else {
+      _lineContainer->setEnergy(1.0f);
+    }
+
+    _rocket->setSpeed(_rocket->getSpeed() + 2);
+
+    if (_rocket->getSpeed() > 70) _rocket->setSpeed(70);
+
+    _lineContainer->setEnergyDecrement(0.0002f);
+    SimpleAudioEngine::getInstance()->playEffect("pickup.wav");
+    resetStar();
+
+    int points = 100 - _timeBetweenPickups;
+
+    if (points < 0) points = 0;
+
+    _score += points;
+    _scoreDisplay->setString(String::createWithFormat("%i", _score)->getCString());
+    _timeBetweenPickups = 0;
+
+  }
+
+  _timeBetweenPickups += dt;
+  if (_lineContainer->getEnergy() == 0){
+
+    if (_rocket->isVisible()) killPlayer();
+
+  }
 
 }
 

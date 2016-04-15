@@ -329,11 +329,32 @@ void GameLayer::resetGame () {
 
 void GameLayer::resetStar() {
 
+  Point position = _grid[_gridIndex];
+  _gridIndex++;
+
+  if ( _gridIndex == _grid.size() ) _gridIndex = 0;
+
+  _star->setPosition(position);
+  _star->setVisible(true);
+  _star->resetSystem();
+
 }
 
 void GameLayer::killPlayer() {
 
+  SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+  SimpleAudioEngine::getInstance()->stopAllEffects();
+  SimpleAudioEngine::getInstance()->playEffect("shipBoom.wav");
 
+  _boom->setPosition(_rocket->getPosition());
+  _boom->resetSystem();
+  _rocket->setVisible(false);
+  _jet->stopSystem();
+  _lineContainer->setLineType(LINE_NONE);
+  _running = false;
+  _state = kGameOver;
+  _gameOver->setVisible(true);
+  _pauseBtn->setVisible(false);
 
 }
 

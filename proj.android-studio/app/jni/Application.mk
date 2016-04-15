@@ -11,3 +11,5 @@ else
   APP_CPPFLAGS += -DNDEBUG
   APP_OPTIM := release
 endif
+
+APP_ABI := armeabi x86

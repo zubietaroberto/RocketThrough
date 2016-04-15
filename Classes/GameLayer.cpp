@@ -54,8 +54,6 @@ bool GameLayer::init()
 
     createParticles();
 
-    createStarGrid();
-
     // Build Multitouch event Listener
     auto listener = EventListenerTouchAllAtOnce::create();
     listener->onTouchesBegan = CC_CALLBACK_2(GameLayer::onTouchesBegan, this);
@@ -312,8 +310,7 @@ void GameLayer::resetGame () {
     _lineContainer->reset();
 
     //shuffle grid cells
-    std::random_shuffle(_grid.begin(), _grid.end());
-    _gridIndex = 0;
+    gridContainer.reset(_screenSize, planets);
 
     resetStar();
 
@@ -329,12 +326,7 @@ void GameLayer::resetGame () {
 
 void GameLayer::resetStar() {
 
-  Point position = _grid[_gridIndex];
-  _gridIndex++;
-
-  if ( _gridIndex == _grid.size() ) _gridIndex = 0;
-
-  _star->setPosition(position);
+  _star->setPosition(gridContainer.getNewPosition());
   _star->setVisible(true);
   _star->resetSystem();
 
@@ -492,32 +484,4 @@ void GameLayer::createParticles() {
 	_star->stopSystem();
 	_star->setVisible(false);
 	this->addChild(_star, kBackground, kSpriteStar);
-}
-
-void GameLayer::createStarGrid() {
-    //create grid
-    float gridFrame = _screenSize.width * 0.1f;
-    int tile = 32;
-    int rows = (_screenSize.height - 4 * gridFrame)/tile;
-    int cols = (_screenSize.width  - 2 * gridFrame)/tile;
-
-    int count = planets.size();
-    GameSprite * planet;
-    Point cell;
-    bool overlaps;
-    for (int r = 0; r < rows; r++) {
-        for (int c = 0; c < cols; c++) {
-            cell = Vec2(gridFrame + c * tile, 2 * gridFrame + r * tile);
-            overlaps = false;
-            for (int j = 0; j < count; j++) {
-                planet = planets.at(j);
-                if (pow(planet->getPositionX() - cell.x, 2) + pow(planet->getPositionY() - cell.y, 2) <= pow(planet->getRadius() * 1.2f, 2)) {
-                    overlaps = true;
-                }
-            }
-            if (!overlaps) _grid.push_back(cell);
-        }
-    }
-    CCLOG("POSSIBLE STARS: %i", _grid.size());
-
 }

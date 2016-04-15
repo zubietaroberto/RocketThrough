@@ -127,6 +127,7 @@ set(GAME_SRC
   Classes/GameLayer.cpp
   Classes/GameSprite.cpp
   Classes/LineContainer.cpp
+  Classes/GridContainer.cpp
   Classes/Rocket.cpp
   ${PLATFORM_SPECIFIC_SRC}
 )
@@ -136,6 +137,7 @@ set(GAME_HEADERS
   Classes/GameLayer.hpp
   Classes/GameSprite.hpp
   Classes/LineContainer.hpp
+  Classes/GridContainer.hpp
   Classes/Rocket.hpp
   ${PLATFORM_SPECIFIC_HEADERS}
 )

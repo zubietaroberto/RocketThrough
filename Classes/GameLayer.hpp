@@ -4,7 +4,7 @@
 
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
-
+#include "GridContainer.hpp"
 
 
 USING_NS_CC;
@@ -41,6 +41,7 @@ class GameLayer : public Layer {
 
     Rocket * _rocket;
     LineContainer * _lineContainer;
+    GridContainer gridContainer;
 
     SpriteBatchNode *_gameBatchNode;
     Label* _scoreDisplay;
@@ -65,9 +66,6 @@ class GameLayer : public Layer {
     bool _drawing;
     bool _running;
 
-    std::vector<Point> _grid;
-    int _gridIndex;
-
     int _minLineLength;
     float _cometInterval;
     float _cometTimer;
@@ -78,7 +76,6 @@ class GameLayer : public Layer {
 
     void createGameScreen(void);
     void createParticles(void);
-    void createStarGrid(void);
 
 	int _score;
 	float _timeBetweenPickups;

@@ -147,6 +147,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\GameLayer.cpp" />
     <ClCompile Include="..\Classes\GameSprite.cpp" />
+    <ClCompile Include="..\Classes\GridContainer.cpp" />
     <ClCompile Include="..\Classes\LineContainer.cpp" />
     <ClCompile Include="..\Classes\Rocket.cpp" />
     <ClCompile Include="main.cpp" />
@@ -155,6 +156,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\GameLayer.hpp" />
     <ClInclude Include="..\Classes\GameSprite.hpp" />
+    <ClInclude Include="..\Classes\GridContainer.hpp" />
     <ClInclude Include="..\Classes\LineContainer.hpp" />
     <ClInclude Include="..\Classes\Rocket.hpp" />
     <ClInclude Include="main.h" />

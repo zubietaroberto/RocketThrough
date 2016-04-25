@@ -5,6 +5,7 @@
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
 #include "GridContainer.hpp"
+#include "Warp.hpp"
 
 
 USING_NS_CC;
@@ -42,6 +43,7 @@ class GameLayer : public Layer {
     Rocket * _rocket;
     LineContainer * _lineContainer;
     GridContainer gridContainer;
+    Warp warp;
 
     SpriteBatchNode *_gameBatchNode;
     Label* _scoreDisplay;
@@ -56,7 +58,6 @@ class GameLayer : public Layer {
     ParticleSystem * _boom;
     ParticleSystem * _comet;
     ParticleSystem * _pickup;
-    ParticleSystem * _warp;
 
     std::vector<GameSprite*> planets;
     Size _screenSize;

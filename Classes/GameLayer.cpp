@@ -314,7 +314,8 @@ void GameLayer::resetGame () {
 
     resetStar();
 
-    _warp->stopSystem();
+    // Reset Warp
+    warp.stopWarpParticleSystem();
 
     _running = true;
 
@@ -476,9 +477,8 @@ void GameLayer::createParticles() {
 	_pickup->stopSystem();
 	this->addChild(_pickup, kMiddleground);
 
-	_warp = ParticleSystemQuad::create("warp.plist");
-	_warp->setPosition(_rocket->getPosition());
-	this->addChild(_warp, kBackground);
+  auto warpPS = warp.initWarpParticleSystem(_rocket->getPosition());
+	this->addChild(warpPS, kBackground);
 
 	_star = ParticleSystemQuad::create("star.plist");
 	_star->stopSystem();

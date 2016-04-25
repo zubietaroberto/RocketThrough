@@ -129,6 +129,7 @@ set(GAME_SRC
   Classes/LineContainer.cpp
   Classes/GridContainer.cpp
   Classes/Rocket.cpp
+  Classes/Warp.cpp
   ${PLATFORM_SPECIFIC_SRC}
 )
 
@@ -139,6 +140,7 @@ set(GAME_HEADERS
   Classes/LineContainer.hpp
   Classes/GridContainer.hpp
   Classes/Rocket.hpp
+  Classes/Warp.hpp
   ${PLATFORM_SPECIFIC_HEADERS}
 )
 

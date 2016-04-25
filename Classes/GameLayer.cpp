@@ -177,6 +177,15 @@ void GameLayer::update (float dt) {
 
   }
 
+  // Collision with a Warp
+  if (warp.collision(_rocket)){
+
+    //Rocket has collided. Teleport
+    _rocket->setPosition(gridContainer.getNewStarPosition(_rocket->getPosition()));
+    warp.setPosition(gridContainer.getNewCell());
+
+  }
+
 }
 
 void GameLayer::onTouchesBegan(const std::vector<Touch*>& touches, Event *event){
@@ -315,7 +324,7 @@ void GameLayer::resetGame () {
     resetStar();
 
     // Reset Warp
-    warp.stopWarpParticleSystem();
+    warp.setPosition(gridContainer.getNewCell());
 
     _running = true;
 
@@ -327,7 +336,7 @@ void GameLayer::resetGame () {
 
 void GameLayer::resetStar() {
 
-  _star->setPosition(gridContainer.getNewPosition(_rocket->getPosition()));
+  _star->setPosition(gridContainer.getNewStarPosition(_rocket->getPosition()));
   _star->setVisible(true);
   _star->resetSystem();
 

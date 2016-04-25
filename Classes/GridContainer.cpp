@@ -38,12 +38,20 @@ void GridContainer::reset(Size pScreenSize, std::vector<GameSprite*> planets){
   mGridHeight = pScreenSize.height/rows;
 }
 
-Vec2 GridContainer::getNewPosition(Vec2 pRocketPosition){
+Vec2 GridContainer::getNewCell(){
 
-  Point position = _grid[_gridIndex];
-  _gridIndex++;
+    Point position = _grid[_gridIndex];
+    _gridIndex++;
 
-  if ( _gridIndex == _grid.size() ) _gridIndex = 0;
+    if ( _gridIndex == _grid.size() ) _gridIndex = 0;
+
+    return position;
+
+}
+
+Vec2 GridContainer::getNewStarPosition(Vec2 pRocketPosition){
+
+  Point position = getNewCell();
 
   // Check if the rocket is within 10 grid cells
   int gridXDistance = mGridWidth*10;
@@ -56,7 +64,7 @@ Vec2 GridContainer::getNewPosition(Vec2 pRocketPosition){
   ){
 
     // Rocket is too close to the star. Search a new position.
-    return getNewPosition(pRocketPosition);
+    return getNewStarPosition(pRocketPosition);
 
   } else {
 

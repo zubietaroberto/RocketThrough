@@ -23,6 +23,7 @@ public:
   GridContainer();
 
   void reset(Size pScreenSize, std::vector<GameSprite*> planets);
-  Vec2 getNewPosition(Vec2 pRocketPosition);
+  Vec2 getNewStarPosition(Vec2 pRocketPosition);
+  Vec2 getNewCell();
 
 };

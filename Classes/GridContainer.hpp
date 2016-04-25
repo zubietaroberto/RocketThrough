@@ -16,10 +16,13 @@ private:
   std::vector<Point>::size_type _gridIndex;
   std::default_random_engine randomEngine{};
 
+  int mGridWidth = 0;
+  int mGridHeight = 0;
+
 public:
   GridContainer();
 
   void reset(Size pScreenSize, std::vector<GameSprite*> planets);
-  Vec2 getNewPosition();
+  Vec2 getNewPosition(Vec2 pRocketPosition);
 
 };

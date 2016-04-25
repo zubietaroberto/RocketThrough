@@ -32,14 +32,34 @@ void GridContainer::reset(Size pScreenSize, std::vector<GameSprite*> planets){
 
   std::shuffle(std::begin(_grid), std::end(_grid), randomEngine);
   _gridIndex = 0;
+
+  //Extra calculations
+  mGridWidth = pScreenSize.width/cols;
+  mGridHeight = pScreenSize.height/rows;
 }
 
-Vec2 GridContainer::getNewPosition(){
+Vec2 GridContainer::getNewPosition(Vec2 pRocketPosition){
 
   Point position = _grid[_gridIndex];
   _gridIndex++;
 
   if ( _gridIndex == _grid.size() ) _gridIndex = 0;
 
-  return position;
+  // Check if the rocket is within 10 grid cells
+  int gridXDistance = mGridWidth*10;
+  int gridYDistance = mGridHeight*10;
+
+  if ( position.x+gridXDistance > pRocketPosition.x
+    && position.x-gridXDistance < pRocketPosition.x
+    && position.y+gridYDistance > pRocketPosition.y
+    && position.y-gridYDistance < pRocketPosition.y
+  ){
+
+    // Rocket is too close to the star. Search a new position.
+    return getNewPosition(pRocketPosition);
+
+  } else {
+
+    return position;
+  }
 }

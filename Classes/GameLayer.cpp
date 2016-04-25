@@ -326,7 +326,7 @@ void GameLayer::resetGame () {
 
 void GameLayer::resetStar() {
 
-  _star->setPosition(gridContainer.getNewPosition());
+  _star->setPosition(gridContainer.getNewPosition(_rocket->getPosition()));
   _star->setVisible(true);
   _star->resetSystem();
 
